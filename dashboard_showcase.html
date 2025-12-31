@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NYC Flight Weather Dashboard - Portfolio Showcase</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #e63946 0%, #c1121f 100%);
+            color: white;
+            padding: 30px 40px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.2em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.95;
+        }
+        
+        .badge-row {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .badge {
+            background: rgba(255,255,255,0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            backdrop-filter: blur(10px);
+        }
+        
+        .main-content {
+            padding: 30px 40px;
+        }
+        
+        .dashboard-preview {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .chart-card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+        
+        .chart-card h3 {
+            color: #1a1a2e;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .chart-card h3::before {
+            content: "📊";
+        }
+        
+        /* Wind Speed Chart Simulation */
+        .wind-chart {
+            height: 150px;
+            background: linear-gradient(to bottom, #e3f2fd 0%, #bbdefb 100%);
+            border-radius: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .wind-line {
+            position: absolute;
+            bottom: 20px;
+            left: 10px;
+            right: 10px;
+            height: 100px;
+        }
+        
+        .wind-line svg {
+            width: 100%;
+            height: 100%;
+        }
+        
+        /* Monthly Table */
+        .monthly-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85em;
+        }
+        
+        .monthly-table th {
+            background: #e63946;
+            color: white;
+            padding: 10px 8px;
+            text-align: center;
+        }
+        
+        .monthly-table td {
+            padding: 8px;
+            text-align: center;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .monthly-table tr:nth-child(even) {
+            background: #f5f5f5;
+        }
+        
+        .monthly-table .highlight {
+            background: #fff3cd;
+            font-weight: bold;
+        }
+        
+        /* Top Windiest Days */
+        .windiest-list {
+            list-style: none;
+        }
+        
+        .windiest-list li {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 15px;
+            background: linear-gradient(90deg, #e3f2fd 0%, #fff 100%);
+            margin-bottom: 8px;
+            border-radius: 8px;
+            border-left: 4px solid #1976d2;
+        }
+        
+        .windiest-list .rank {
+            font-weight: bold;
+            color: #e63946;
+            min-width: 30px;
+        }
+        
+        .windiest-list .speed {
+            color: #1976d2;
+            font-weight: bold;
+        }
+        
+        /* Insights Section */
+        .insights {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-top: 20px;
+        }
+        
+        .insights h3 {
+            margin-bottom: 20px;
+            font-size: 1.3em;
+        }
+        
+        .insight-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+        
+        .insight-card {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .insight-card .icon {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .insight-card .value {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #4fc3f7;
+        }
+        
+        .insight-card .label {
+            font-size: 0.9em;
+            opacity: 0.8;
+            margin-top: 5px;
+        }
+        
+        /* CTA Section */
+        .cta-section {
+            text-align: center;
+            padding: 30px;
+            background: #f8f9fa;
+        }
+        
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #e63946 0%, #c1121f 100%);
+            color: white;
+            padding: 15px 40px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1.1em;
+            box-shadow: 0 4px 15px rgba(230, 57, 70, 0.4);
+            transition: transform 0.3s;
+        }
+        
+        .cta-button:hover {
+            transform: translateY(-3px);
+        }
+        
+        .author {
+            margin-top: 20px;
+            color: #666;
+        }
+        
+        .author strong {
+            color: #1a1a2e;
+        }
+        
+        /* Airport Legend */
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 15px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 4px;
+            border-radius: 2px;
+        }
+        
+        .legend-color.ewr { background: #e63946; }
+        .legend-color.jfk { background: #1976d2; }
+        .legend-color.lga { background: #2e7d32; }
+
+        .full-width {
+            grid-column: span 2;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-preview {
+                grid-template-columns: 1fr;
+            }
+            .insight-grid {
+                grid-template-columns: 1fr;
+            }
+            .full-width {
+                grid-column: span 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🌤️ NYC Flight Weather Dashboard</h1>
+            <p>Interactive Analysis of Wind Patterns at JFK, LGA & EWR Airports</p>
+            <div class="badge-row">
+                <span class="badge">📊 Tableau</span>
+                <span class="badge">🐍 Python</span>
+                <span class="badge">📈 26,130 Observations</span>
+                <span class="badge">✈️ 3 Airports</span>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Dashboard Preview Grid -->
+            <div class="dashboard-preview">
+                <!-- Daily Wind Speed Chart -->
+                <div class="chart-card full-width">
+                    <h3>Daily Mean Wind Speed (m/s) - 2013</h3>
+                    <div class="wind-chart">
+                        <div class="wind-line">
+                            <svg viewBox="0 0 400 100" preserveAspectRatio="none">
+                                <!-- EWR Line (Red) -->
+                                <polyline fill="none" stroke="#e63946" stroke-width="2"
+                                    points="0,60 20,55 40,50 60,45 80,55 100,60 120,58 140,65 160,70 180,68 200,65 220,55 240,60 260,65 280,62 300,58 320,55 340,60 360,58 380,62 400,60"/>
+                                <!-- JFK Line (Blue) -->
+                                <polyline fill="none" stroke="#1976d2" stroke-width="2"
+                                    points="0,50 20,45 40,35 60,30 80,40 100,45 120,48 140,55 160,60 180,58 200,55 220,45 240,50 260,55 280,52 300,48 320,42 340,48 360,50 380,52 400,50"/>
+                                <!-- LGA Line (Green) -->
+                                <polyline fill="none" stroke="#2e7d32" stroke-width="2"
+                                    points="0,55 20,50 40,42 60,38 80,48 100,52 120,54 140,60 160,65 180,62 200,58 220,50 240,55 260,60 280,56 300,52 320,48 340,54 360,55 380,58 400,55"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="legend">
+                        <div class="legend-item"><div class="legend-color ewr"></div> EWR (Newark)</div>
+                        <div class="legend-item"><div class="legend-color jfk"></div> JFK (Kennedy)</div>
+                        <div class="legend-item"><div class="legend-color lga"></div> LGA (LaGuardia)</div>
+                    </div>
+                </div>
+                
+                <!-- Monthly Averages Table -->
+                <div class="chart-card">
+                    <h3>Monthly Average Wind Speed (m/s)</h3>
+                    <table class="monthly-table">
+                        <tr>
+                            <th>Month</th>
+                            <th>EWR</th>
+                            <th>JFK</th>
+                            <th>LGA</th>
+                        </tr>
+                        <tr><td>January</td><td>4.51</td><td>5.44</td><td>5.23</td></tr>
+                        <tr><td>February</td><td>5.61</td><td>6.03</td><td>5.65</td></tr>
+                        <tr class="highlight"><td>March ⬆️</td><td>5.19</td><td><strong>6.15</strong></td><td>5.85</td></tr>
+                        <tr><td>April</td><td>4.32</td><td>5.47</td><td>4.97</td></tr>
+                        <tr><td>May</td><td>3.80</td><td>4.58</td><td>4.27</td></tr>
+                        <tr><td>June</td><td>4.18</td><td>4.86</td><td>4.36</td></tr>
+                        <tr><td>July</td><td>4.19</td><td>4.49</td><td>4.17</td></tr>
+                        <tr class="highlight"><td>August ⬇️</td><td><strong>3.43</strong></td><td>4.32</td><td>3.73</td></tr>
+                        <tr><td>September</td><td>3.68</td><td>4.39</td><td>3.98</td></tr>
+                        <tr><td>October</td><td>3.68</td><td>4.61</td><td>4.57</td></tr>
+                        <tr><td>November</td><td>4.70</td><td>5.75</td><td>5.43</td></tr>
+                        <tr><td>December</td><td>3.89</td><td>4.82</td><td>4.43</td></tr>
+                    </table>
+                </div>
+                
+                <!-- Top Windiest Days -->
+                <div class="chart-card">
+                    <h3>🏆 Top 10 Windiest Days at LGA</h3>
+                    <ul class="windiest-list">
+                        <li><span class="rank">#1</span> Nov 24, 2013 <span class="speed">11.47 m/s</span></li>
+                        <li><span class="rank">#2</span> Jan 31, 2013 <span class="speed">10.77 m/s</span></li>
+                        <li><span class="rank">#3</span> Mar 6, 2013 <span class="speed">10.22 m/s</span></li>
+                        <li><span class="rank">#4</span> Feb 18, 2013 <span class="speed">9.86 m/s</span></li>
+                        <li><span class="rank">#5</span> Feb 17, 2013 <span class="speed">9.65 m/s</span></li>
+                        <li><span class="rank">#6</span> Feb 21, 2013 <span class="speed">9.24 m/s</span></li>
+                        <li><span class="rank">#7</span> May 26, 2013 <span class="speed">9.00 m/s</span></li>
+                        <li><span class="rank">#8</span> Mar 14, 2013 <span class="speed">8.92 m/s</span></li>
+                        <li><span class="rank">#9</span> Nov 19, 2013 <span class="speed">8.66 m/s</span></li>
+                        <li><span class="rank">#10</span> Feb 1, 2013 <span class="speed">8.23 m/s</span></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Key Insights -->
+            <div class="insights">
+                <h3>🔍 Key Insights & Business Value</h3>
+                <div class="insight-grid">
+                    <div class="insight-card">
+                        <div class="icon">📈</div>
+                        <div class="value">March</div>
+                        <div class="label">Peak Wind Month<br>JFK: 6.15 m/s</div>
+                    </div>
+                    <div class="insight-card">
+                        <div class="icon">📉</div>
+                        <div class="value">August</div>
+                        <div class="label">Calmest Month<br>EWR: 3.43 m/s</div>
+                    </div>
+                    <div class="insight-card">
+                        <div class="icon">🌪️</div>
+                        <div class="value">11.47</div>
+                        <div class="label">Max Wind (m/s)<br>Nov 24 @ LGA</div>
+                    </div>
+                    <div class="insight-card">
+                        <div class="icon">✈️</div>
+                        <div class="value">JFK</div>
+                        <div class="label">Windiest Airport<br>Coastal Exposure</div>
+                    </div>
+                    <div class="insight-card">
+                        <div class="icon">🏢</div>
+                        <div class="value">EWR</div>
+                        <div class="label">Calmest Airport<br>Inland Location</div>
+                    </div>
+                    <div class="insight-card">
+                        <div class="icon">📊</div>
+                        <div class="value">26,130</div>
+                        <div class="label">Data Points<br>Hourly Records</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- CTA Section -->
+        <div class="cta-section">
+            <a href="https://public.tableau.com/app/profile/victor.prefa4462/viz/Dasfhboard1/NYCFlightWeatherDashboard" class="cta-button" target="_blank">
+                🔗 View Interactive Dashboard
+            </a>
+            <div class="author">
+                <p>Created by <strong>Victor Prefa</strong></p>
+                <p>MSc Data Science & Business Analytics | Deakin University</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
